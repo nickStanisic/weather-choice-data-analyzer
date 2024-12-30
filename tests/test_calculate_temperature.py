@@ -2,18 +2,41 @@ import pytest
 from helpers.calculate_temperature import calculate_temperature
 
 def test_is_temp_good_within_range():
-    """Test is_temp_good function with temperatures within the specified range."""
-    # Arrange
+    """Test is_temp_inside function with temperatures within the specified range."""
     db_data = [
-        {'id': 1, 'lat': 39.0, 'lon': -105.5, 'temp': 20.0, 'reading_time': '2024-01-11T12:00:00'},
-        {'id': 2, 'lat': 40.0, 'lon': -106.0, 'temp': 25.0, 'reading_time': '2024-01-12T12:00:00'},
+        (1, 1, 20.0, 39.0, -105.5),
+        (2, 2, 25.0, 40.0, -106.0)
     ]
     low = 15.0
     high = 30.0
 
-    # Act
     result = calculate_temperature(high, low, db_data)
 
-    # Assert
-    assert result[0]['valid'] is True
-    assert result[1]['valid'] is True
+    print(result)
+    assert(result['valid'] == True)
+
+def test_is_temp_above_range():
+    """Test if function with temperatures above the specified range are False."""
+    db_data = [
+        (1, 1, 40.0, 39.0, -105.5),
+        (2, 2, 25.0, 40.0, -106.0)
+    ]
+    low = 15.0
+    high = 30.0
+
+    result = calculate_temperature(high, low, db_data)
+
+    assert(result['valid'] == False)
+
+def test_is_temp_below_range():
+    """Test if function with temperatures below the specified range are marked as False."""
+    db_data = [
+        (1, 1, -40.0, 39.0, -105.5),
+        (2, 2, 25.0, 40.0, -106.0)
+    ]
+    low = 15.0
+    high = 30.0
+
+    result = calculate_temperature(high, low, db_data)
+
+    assert(result['valid'] == False)

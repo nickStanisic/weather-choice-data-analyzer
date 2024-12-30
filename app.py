@@ -1,10 +1,13 @@
 import os
+from dotenv import load_dotenv
 from flask import jsonify, request, Flask
 from config import NormalConfig, TestConfig
-from helpers.get_data_from_database import pull_weather_data
-from helpers.calculate_temperature import calculate_temperature
 from helpers.convert_time import convert_to_unix
 from helpers.assign_boolean_value import assign_boolean_to_coordinates
+
+load_dotenv()
+
+DBURL = os.getenv("DB_URL")
 
 def create_app(config_class=NormalConfig):
    
@@ -23,7 +26,7 @@ def create_app(config_class=NormalConfig):
         startTime = convert_to_unix(startTime)
         endTime = convert_to_unix(endTime)
 
-        data_with_boolean = assign_boolean_to_coordinates(high, low, min_lat=41, lat_increase=2, min_lon=-109, lon_increase=2, startTime=startTime, endTime=endTime)
+        data_with_boolean = assign_boolean_to_coordinates(DBURL, high, low, startTime=startTime, endTime=endTime)
         return jsonify(data_with_boolean)
     return app
 

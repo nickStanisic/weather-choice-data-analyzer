@@ -1,23 +1,9 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+FROM postgres:15
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+#Set env variables
+ENV POSTGRES_DB=testdb
+ENV POSTGRES_USER=user 
+ENV POSTGRES_PASSWORD=password
 
-# Set work directory
-WORKDIR /app
 
-# Install dependencies
-COPY ../requirements.txt .
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-
-# Copy project
-COPY ../ ./
-
-# Install test dependencies
-RUN pip install pytest pytest-docker psycopg2-binary
-
-# Run tests
-CMD ["pytest", "--cov=helpers", "--cov-report=xml", "tests/"]
+EXPOSE 5432
