@@ -26,7 +26,7 @@ def create_app(config_class=NormalConfig):
         startTime = convert_to_unix(startTime)
         endTime = convert_to_unix(endTime)
 
-        data_with_boolean = assign_boolean_to_coordinates(DBURL, high, low, startTime=startTime, endTime=endTime)
+        data_with_boolean = assign_boolean_to_coordinates(DBURL, high, low, startTime, endTime)
         return jsonify(data_with_boolean)
     return app
 
