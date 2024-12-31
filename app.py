@@ -22,7 +22,7 @@ def create_app(config_class=NormalConfig):
         low = front_end_data.get('low')
         startTime = front_end_data.get('startTime')
         endTime = front_end_data.get('endTime')
-
+        print(endTime, startTime)
         startTime = convert_to_unix(startTime)
         endTime = convert_to_unix(endTime)
 
