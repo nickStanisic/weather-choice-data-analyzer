@@ -17,11 +17,11 @@ def ensure_database_is_running():
      env = os.environ.copy()
 
      subprocess.run(["docker-compose", "-f", "docker/docker-compose.yml", "up", "-d"], check=True, env=env)
-
+     print(os.getenv("DB_URL_TEST"))
      for _ in range(30):
          try:
              conn = psycopg2.connect(
-                 'postgresql://user:password@localhost:5433/testdb'
+                 os.getenv("DB_URL_TEST")
              )
              conn.close()
              break
