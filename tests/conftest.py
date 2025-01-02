@@ -28,7 +28,10 @@ def ensure_database_is_running():
          except psycopg2.OperationalError:
              time.sleep(2)
      else:
-         pytest.fail("Database is not available")
+        print("== Printing Postgres container logs for debugging... ==")
+        subprocess.run(["docker-compose", "-f", "docker/docker-compose.yml", "logs", "db"],
+                       check=False, env=env)
+        pytest.fail("Database is not available")
 
      yield
 
