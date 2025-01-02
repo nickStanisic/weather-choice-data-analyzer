@@ -18,7 +18,7 @@ def ensure_database_is_running():
 
      subprocess.run(["docker-compose", "-f", "docker/docker-compose.yml", "up", "-d"], check=True, env=env)
 
-     for _ in range(10):
+     for _ in range(30):
          try:
              conn = psycopg2.connect(
                  os.getenv("DB_URL_TEST")
@@ -26,7 +26,7 @@ def ensure_database_is_running():
              conn.close()
              break
          except psycopg2.OperationalError:
-             time.sleep(1)
+             time.sleep(2)
      else:
          pytest.fail("Database is not available")
 
