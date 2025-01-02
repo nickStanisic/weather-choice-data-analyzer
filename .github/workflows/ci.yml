@@ -22,24 +22,7 @@ jobs:
       - name: Install docker-compose
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker-compose netcat-openbsd
-
-      - name: Build and run containers
-        run: docker-compose -f docker/docker-compose.yml up --build -d
-
-      - name: Wait for Postgres on port 5433
-        run: |
-          echo "Waiting for Postgres to be ready on port 5433..."
-          for i in {1..20}; do
-            if nc -z localhost 5433; then
-              echo "Postgres is ready!"
-              exit 0
-            fi
-            echo "Postgres not ready yet, sleeping 2s..."
-            sleep 2
-          done
-          echo "Postgres never became ready, failing."
-          exit 1
+          sudo apt-get install -y docker-compose
 
       - name: Install dependencies
         run: |
@@ -47,5 +30,8 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests
+        env:
+          # The fixture will spin up the container.
+          DB_URL_TEST: postgresql://postgres:postgres@localhost:5433/testdb
         run: |
           pytest
