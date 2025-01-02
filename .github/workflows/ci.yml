@@ -33,7 +33,7 @@ jobs:
         env:
           DB_URL_TEST: postgresql://postgres:postgres@localhost:5433/testdb
         run: |
-          pytest
+          pytest -s
 
       - name: Check container logs
         run: docker-compose -f docker/docker-compose.yml logs db
