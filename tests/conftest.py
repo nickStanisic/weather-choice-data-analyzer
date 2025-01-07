@@ -17,7 +17,7 @@ def ensure_database_is_running():
      env = os.environ.copy()
 
      subprocess.run(["docker-compose", "-f", "docker/docker-compose.yml", "up", "-d"], check=True, env=env)
-     print(os.getenv("DB_URL_TEST"))
+     
      for _ in range(30):
          try:
              conn = psycopg2.connect(
@@ -32,7 +32,7 @@ def ensure_database_is_running():
 
      yield
 
-     ##subprocess.run(["docker-compose", "-f", "docker/docker-compose.yml", "down"], check=True, env=env)
+     subprocess.run(["docker-compose", "-f", "docker/docker-compose.yml", "down"], check=True, env=env)
 
 
 @pytest.fixture()
