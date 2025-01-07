@@ -12,7 +12,7 @@ load_dotenv()
 @pytest.fixture(scope="session", autouse=True)
 def ensure_database_is_running(): 
      """
-     Method to make sure test database is running before running test suite
+     Method to make sure test database is running before running test suite.
      """        
      env = os.environ.copy()
 
