@@ -8,7 +8,7 @@ load_dotenv()
 #setting up DBURL to be test URL instead of actual URL 
 DB_URL_TEST = os.getenv("DB_URL_TEST")
 
-def test_get_data_from_database_response():
+def test_get_data_from_database_response(db_connection, populate_test_data):
     """
     This is a test for pull_weather_data function to see if it can grab data from the test database. 
     """
@@ -18,7 +18,7 @@ def test_get_data_from_database_response():
     weather = pull_weather_data(DB_URL_TEST, startTime, endTime)
     assert weather[0] == (4, 1735270874, 87, 40, 109)
 
-def test_get_data_from_database_sorted():
+def test_get_data_from_database_sorted(db_connection, populate_test_data):
     """
     This method checks that the returned values from pull_weather_data are sorted by lat and lon
     """    
@@ -28,7 +28,7 @@ def test_get_data_from_database_sorted():
     latLon = [(row[3],row[4]) for row in weather]
     assert latLon == sorted(latLon)
 
-def test_get_data_from_database_invalid_times():
+def test_get_data_from_database_invalid_times(db_connection, populate_test_data):
     """
     This checks if error is correctly thrown if start time is after end time
     """    
@@ -37,7 +37,7 @@ def test_get_data_from_database_invalid_times():
     with pytest.raises(ValueError, match="start time cannot be after end time"):
         pull_weather_data(DB_URL_TEST, startTime, endTime)
 
-def test_get_data_from_database_no_matches():
+def test_get_data_from_database_no_matches(db_connection, populate_test_data):
     """
     Test to see if no data is returned for valid times that are not in the database
     """    
@@ -46,7 +46,7 @@ def test_get_data_from_database_no_matches():
     weather = pull_weather_data(DB_URL_TEST, startTime, endTime)
     assert len(weather) == 0
 
-def test_get_data_from_database_specific_match():
+def test_get_data_from_database_specific_match(db_connection, populate_test_data):
     """
     Test that database only pulls the correct data based on time values from the test database
     """    
