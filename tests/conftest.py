@@ -11,36 +11,50 @@ load_dotenv()
 
 @pytest.fixture(scope="session", autouse=True)
 def ensure_database_is_running(): 
-     """
-     Method to make sure test database is running before running test suite.
-     """        
-     env = os.environ.copy()
+    """
+    This method runs the docker-compose file to spin up the test database. It then connects to the database
+    for the duration of the testing session. Afterward, it shuts down the database.
+    """            
+    env = os.environ.copy()
 
-     subprocess.run(["docker-compose", "-f", "docker/docker-compose.yml", "up", "-d"], check=True, env=env)
-     
-     for _ in range(30):
-         try:
-             conn = psycopg2.connect(
-                 os.getenv("DB_URL_TEST")
-             )
-             conn.close()
-             break
-         except psycopg2.OperationalError:
-             time.sleep(2)
-     else:
+    #run docker-compose up to get database container running
+    subprocess.run(["docker-compose", "-f", "docker/docker-compose.yml", "up", "-d"], check=True, env=env)
+    
+    #try to connect to DB
+    for _ in range(30):
+        try:
+            conn = psycopg2.connect(
+                os.getenv("DB_URL_TEST")
+            )
+            conn.close()
+            break
+        except psycopg2.OperationalError:
+            time.sleep(2)
+    else:
         pytest.fail("Database is not available")
 
-     yield
+    #wait while other tests are run
+    yield
 
-     subprocess.run(["docker-compose", "-f", "docker/docker-compose.yml", "down"], check=True, env=env)
+    #shut down the database container
+    subprocess.run(["docker-compose", "-f", "docker/docker-compose.yml", "down"], check=True, env=env)
 
 
 @pytest.fixture()
 def db_connection():
-    "connect to test database"
+    """
+    This method connects to the database created in ensure_database_is_running and creates a weather table 
+    for the database. It closes the connection after session is done. 
+
+    Yields:
+        conn: connection to database
+    """    
+
+    #connect to test database
     conn = psycopg2.connect(os.getenv("DB_URL_TEST"))
     conn.autocommit = True
     
+    #drop table and create new table for testing
     with conn.cursor() as cursor:
         cursor.execute("DROP TABLE IF EXISTS weather;")
         cursor.execute("""
@@ -61,8 +75,14 @@ def db_connection():
 @pytest.fixture
 def populate_test_data(db_connection):
     """
-    Fill test database with different test data
-    """
+    Connects to the database and inserts data to the weather table for testing. After the session is done,
+    it deletes the table.
+
+    Args:
+        db_connection (cursor): cursor object to interact with database
+    """    
+
+    #use cursor to execute multiple inserts. Use parameters to avoid SQL injection.
     with db_connection.cursor() as cursor:
         cursor.executemany(
             "INSERT INTO weather (dt, temperature, lat, lon, date_time) VALUES (%s, %s, %s, %s, %s)",
