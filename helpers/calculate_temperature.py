@@ -24,7 +24,6 @@ def calculate_temperature(high, low, database_data):
     for row in database_data:
         if row[2] > float(high) or row[2] < float(low):
             inside = False
-            break
         temperature_average += row[2]
         count += 1
 
