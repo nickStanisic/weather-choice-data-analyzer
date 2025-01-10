@@ -1,4 +1,5 @@
 import datetime
+import pytz
 
 def convert_to_unix(datetime_str):
     """
@@ -14,12 +15,16 @@ def convert_to_unix(datetime_str):
     #specify format of datetime_str parameter
     fmt = "%Y-%m-%dT%H:%M"
 
+    # Define Colorado's timezone (Mountain Time)
+    colorado_tz = pytz.timezone("America/Denver")
+
     try:
         # Attempt to convert the datetime string to a datetime object
-        dt = datetime.datetime.strptime(datetime_str, fmt)
+        naive_dt = datetime.datetime.strptime(datetime_str, fmt)
+        colorado_dt = colorado_tz.localize(naive_dt)
     except ValueError:
         raise ValueError(f"The provided datetime string '{datetime_str}' does not match the format '{fmt}'.")
     
     #creates unix timestamp and cast to int
-    unix_time = int(dt.timestamp())
-    return unix_time
+    return int(colorado_dt.timestamp())
+   
