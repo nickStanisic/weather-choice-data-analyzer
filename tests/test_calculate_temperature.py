@@ -45,3 +45,19 @@ def test_is_temp_below_range():
     result = calculate_temperature(high, low, db_data)
 
     assert(result['valid'] == False)
+
+def test_invalid_temps():
+    """
+    Test calculate_temperature to assess if valid is false for temperatures below the low given. 
+    """
+    db_data = [
+        (1, 1, -40.0, 39.0, -105.5),
+        (2, 2, 25.0, 40.0, -106.0)
+    ]
+    low = 31.0
+    high = 30.0
+
+    with pytest.raises(ValueError, match="low can't be bigger than high"):
+        calculate_temperature(high, low, db_data)
+
+    

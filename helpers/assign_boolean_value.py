@@ -18,8 +18,9 @@ def assign_boolean_to_coordinates(DBURL, hi, low, start_time, end_time):
     """    
     values = []
     #get database data
+    print(DBURL)
     database_data = pull_weather_data(DBURL, start_time, end_time)
-    
+    print(database_data, "HERE2")
     #it is already ordered by lat, lon so iterate over lat, lon groups 
     for (lat, lon), group_iter in itertools.groupby(database_data, key=lambda row: (row[3], row[4])):
         #turn group into a list

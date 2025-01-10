@@ -12,7 +12,6 @@ def calculate_temperature(high, low, database_data):
     Returns:
         dict: date, average temperature, lat, lon and valid information.
     """    
-
     #True if temperature is between high and low, False if temperature is found outside the range
     inside = True 
 
@@ -20,6 +19,8 @@ def calculate_temperature(high, low, database_data):
     temperature_average = 0
     count = 0
 
+    if low > high:
+        raise ValueError("low can't be bigger than high")
     #Check that each rows temperature is within high and low bounds
     for row in database_data:
         if row[2] > float(high) or row[2] < float(low):

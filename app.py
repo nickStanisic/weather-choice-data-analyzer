@@ -6,7 +6,6 @@ from helpers.assign_boolean_value import assign_boolean_to_coordinates
 
 load_dotenv()
 
-DBURL = os.getenv("DB_URL")
 
 def create_app():
     """Creates an instance of a flask app. 
@@ -16,6 +15,8 @@ def create_app():
     Returns:
         app: Instance of a Flask app
     """   
+    DBURL = os.getenv("DB_URL")
+    
     app = Flask(__name__)
 
     @app.route('/analyze', methods=['POST'])
@@ -46,9 +47,10 @@ def create_app():
             #convert times to unix timestamp
             start_time = convert_to_unix(start_time)
             end_time = convert_to_unix(end_time)
-            
+            print(start_time, end_time, "HERE")
             #calculate if temperatures are within or outside range for each lat/lon pair
             data_with_boolean = assign_boolean_to_coordinates(DBURL, high, low, start_time, end_time)
+            print(data_with_boolean, "HERE3")
             return jsonify(data_with_boolean), 200
         
         except ValueError as ve:

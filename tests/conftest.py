@@ -5,6 +5,8 @@ import pytest
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from app import create_app
+from flask import Flask
 
 load_dotenv()
 
@@ -100,3 +102,28 @@ def populate_test_data(db_connection):
 
     with db_connection.cursor() as cursor:
         cursor.execute("DELETE FROM weather;")
+    
+@pytest.fixture
+def mock_db_url(monkeypatch):
+    """
+    Fixture to mock the DB_URL environment variable. 
+    I need it here since DB_URL is directly set in app.
+    """
+    DB_TEST = os.getenv("DB_URL_TEST")
+    monkeypatch.setenv("DB_URL", DB_TEST)
+
+@pytest.fixture
+def app(mock_db_url):
+    """
+    Create and configure a new Flask application for each test.
+    """
+    app = create_app()
+    yield app
+
+@pytest.fixture
+def client(app):
+    """
+    Provides a test client for the Flask app.
+    """
+    return app.test_client()
+
