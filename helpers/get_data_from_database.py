@@ -1,16 +1,16 @@
-import psycopg2
+import os
+from helpers.database import get_db_connection
+import sqlalchemy
 
-
-def pull_weather_data(DBURL, start_time, end_time):
+def pull_weather_data(start_time, end_time):
     """ 
-    This method uses psycopg2 library to pull data from the weather table in the postgres database 
-    based on specified DBURL, start, and end times passed to the function.  All lat and lon pairs for those times 
+    This method uses SQLAlchemy to pull data from the weather table in the postgres database 
+    based on specified start and end times passed to the function. All lat and lon pairs for those times 
     in the database are returned
 
     Args:
-        DBURL (string): This is the URL that specifies the database to access
-        startTime (int): start time for searching database
-        endTime (int): end time for searching database
+        start_time (int): start time for searching database
+        end_time (int): end time for searching database
 
     Raises:
         ValueError: This error is raised if times passed are incorrect
@@ -21,29 +21,26 @@ def pull_weather_data(DBURL, start_time, end_time):
     if start_time > end_time:
         raise ValueError("start time cannot be after end time")
     
-    #try to connect to DB
     try:
-        DB_URL = DBURL
-        conn = psycopg2.connect(DB_URL)
+        engine = get_db_connection()
         
-        #select rows between start and end date
-        cursor = conn.cursor()
-        query = """
-            SELECT id, dt, temperature, lat, lon
-            FROM weather
-            WHERE dt >= %s
-              AND dt <= %s
-            ORDER BY lat ASC, lon ASC;
-        """
-
-        # Execute the query with parameters
-        cursor.execute(query, (start_time, end_time))
-        rows = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        return rows
+        with engine.connect() as conn:
+            query = sqlalchemy.text("""
+                SELECT id, dt, temperature, lat, lon
+                FROM weather
+                WHERE dt >= :start_time
+                  AND dt <= :end_time
+                ORDER BY lat ASC, lon ASC;
+            """)
+            
+            result = conn.execute(query, {
+                'start_time': start_time,
+                'end_time': end_time
+            })
+            
+            rows = result.fetchall()
+            return rows
     
-    #if it can't connect to the database, print an error.
     except Exception as e:
         print(f"An error occurred: {e}")
         return None

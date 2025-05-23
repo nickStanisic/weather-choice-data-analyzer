@@ -18,7 +18,6 @@ def calculate_temperature(high, low, database_data):
     #Two variables used for average temperature calculation
     temperature_average = 0
     count = 0
-    print(low, high)
     if int(low) > int(high):
         raise ValueError("low can't be bigger than high")
     #Check that each rows temperature is within high and low bounds
