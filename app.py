@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from flask import jsonify, request, Flask
 from helpers.convert_time import convert_to_unix
-from helpers.assign_boolean_value import assign_boolean_to_coordinates
+from helpers.pull_weather_data import pull_weather_data
 
 load_dotenv()
 
@@ -47,7 +47,14 @@ def create_app():
 
             # Calculate if temperatures are within or outside range for each lat/lon pair
             # No longer need to pass DBURL
-            data_with_boolean = assign_boolean_to_coordinates(high, low, start_time, end_time)
+            data_with_boolean = pull_weather_data(high, low, start_time, end_time)
+
+            if data_with_boolean is None:
+                return jsonify({"error": "Database query failed."}), 500
+                
+            if len(data_with_boolean) == 0:
+                return jsonify({"message": "No weather data found for the specified time range."}), 200
+                
             return jsonify(data_with_boolean), 200
         
         except ValueError as ve:
