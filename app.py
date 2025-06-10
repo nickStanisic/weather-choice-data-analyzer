@@ -47,7 +47,7 @@ def create_app():
 
             # Calculate if temperatures are within or outside range for each lat/lon pair
             # No longer need to pass DBURL
-            data_with_boolean = pull_weather_data(high, low, start_time, end_time)
+            data_with_boolean = pull_weather_data(start_time, end_time, high, low)
 
             if data_with_boolean is None:
                 return jsonify({"error": "Database query failed."}), 500
